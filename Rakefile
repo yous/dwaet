@@ -23,13 +23,13 @@ task :start do
     stream.filter(track: '됬 -rt') do |object|
       next unless object.is_a?(Twitter::Tweet)
       retry_count = 3
-      duplicate_padding = ''
       begin
         retry_count -= 1
         next if retry_count < 0
         reply_screen_name = object.user.screen_name
         reply_to = object.id
-        update_string = "@#{reply_screen_name} 됐#{duplicate_padding}"
+        update_string = "@#{reply_screen_name} 됐"
+
         print "Updating '#{update_string}' in reply to #{reply_to}..."
         client.update(update_string, in_reply_to_status_id: reply_to)
         puts 'done.'
