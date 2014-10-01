@@ -1,0 +1,8 @@
+# Bundler
+/.bundle/
+*.bundle
+/Gemfile.lock
+
+# Coverage
+/coverage/
+/spec/reports/
