@@ -30,7 +30,7 @@ task :start do
         puts 'done.'
       rescue Twitter::Error::TooManyRequests => error
         puts 'Twitter::Error::TooManyRequests: Sleep' \
-          " #{error.rate_limit_reset_in} seconds..."
+             " #{error.rate_limit_reset_in} seconds..."
         sleep error.rate_limit.reset_in + 1
         retry
       end
