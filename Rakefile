@@ -22,9 +22,14 @@ task :start do
   stream.filter(track: '됬 -rt') do |object|
     next unless object.is_a?(Twitter::Tweet)
     begin
-      client.update("@#{object.user.screen_name} 됐",
-                    in_reply_to_status_id: object.id)
+      reply_screen_name = object.user.screen_name
+      reply_to = object.id
+      print "Updating '@#{reply_screen_name} 됐' in reply to #{reply_to}..."
+      client.update("@#{reply_screen_name} 됐", in_reply_to_status_id: reply_to)
+      puts 'done.'
     rescue Twitter::Error::TooManyRequests => error
+      puts 'Twitter::Error::TooManyRequests: Sleep' \
+           " #{error.rate_limit_reset_in} seconds..."
       sleep error.rate_limit.reset_in + 1
       retry
     end
