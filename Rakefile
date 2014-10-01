@@ -22,12 +22,18 @@ task :start do
   begin
     stream.filter(track: '됬 -rt') do |object|
       next unless object.is_a?(Twitter::Tweet)
+      duplicate_padding = ''
       begin
         reply_screen_name = object.user.screen_name
         reply_to = object.id
-        print "Updating '@#{reply_screen_name} 됐' in reply to #{reply_to}..."
-        client.update("@#{reply_screen_name} 됐", in_reply_to_status_id: reply_to)
+        update_string = "@#{reply_screen_name} 됐#{duplicate_padding}"
+        print "Updating '#{update_string}' in reply to #{reply_to}..."
+        client.update(update_string, in_reply_to_status_id: reply_to)
         puts 'done.'
+      rescue Twitter::Error::DuplicateStatus => error
+        puts 'Twitter::Error::DuplicateStatus: Retrying...'
+        duplicate_padding += '　'
+        retry
       rescue Twitter::Error::TooManyRequests => error
         puts 'Twitter::Error::TooManyRequests: Sleep' \
              " #{error.rate_limit_reset_in} seconds..."
