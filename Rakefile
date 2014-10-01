@@ -19,20 +19,24 @@ task :start do
     config.access_token = config_file['access_token']
     config.access_token_secret = config_file['access_token_secret']
   end
-  stream.filter(track: '됬 -rt') do |object|
-    next unless object.is_a?(Twitter::Tweet)
-    begin
-      reply_screen_name = object.user.screen_name
-      reply_to = object.id
-      print "Updating '@#{reply_screen_name} 됐' in reply to #{reply_to}..."
-      client.update("@#{reply_screen_name} 됐", in_reply_to_status_id: reply_to)
-      puts 'done.'
-    rescue Twitter::Error::TooManyRequests => error
-      puts 'Twitter::Error::TooManyRequests: Sleep' \
-           " #{error.rate_limit_reset_in} seconds..."
-      sleep error.rate_limit.reset_in + 1
-      retry
+  begin
+    stream.filter(track: '됬 -rt') do |object|
+      next unless object.is_a?(Twitter::Tweet)
+      begin
+        reply_screen_name = object.user.screen_name
+        reply_to = object.id
+        print "Updating '@#{reply_screen_name} 됐' in reply to #{reply_to}..."
+        client.update("@#{reply_screen_name} 됐", in_reply_to_status_id: reply_to)
+        puts 'done.'
+      rescue Twitter::Error::TooManyRequests => error
+        puts 'Twitter::Error::TooManyRequests: Sleep' \
+          " #{error.rate_limit_reset_in} seconds..."
+        sleep error.rate_limit.reset_in + 1
+        retry
+      end
     end
+  rescue Twitter::Error::Unauthorized
+    puts 'Unauthorized OAuth access token and secret. Please update your config.yml.'
   end
 end
 
