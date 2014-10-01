@@ -36,7 +36,8 @@ task :start do
       end
     end
   rescue Twitter::Error::Unauthorized
-    puts 'Unauthorized OAuth access token and secret. Please update your config.yml.'
+    puts 'Unauthorized OAuth access token and secret.' \
+         ' Please update your config.yml.'
   end
 end
 
