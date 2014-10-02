@@ -33,6 +33,8 @@ task :start do
         print "Updating '#{update_string}' in reply to #{reply_to}..."
         client.update(update_string, in_reply_to_status_id: reply_to)
         puts 'done.'
+      rescue Twitter::Error::DuplicateStatus
+        puts 'Twitter::Error::DuplicateStatus'
       rescue Twitter::Error::TooManyRequests => error
         puts 'Twitter::Error::TooManyRequests: Sleep' \
              " #{error.rate_limit_reset_in} seconds..."
