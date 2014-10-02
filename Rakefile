@@ -49,5 +49,9 @@ task :search do
   rescue Twitter::Error::Unauthorized => error
     puts "#{error.class}: Unauthorized OAuth access token and secret." \
          ' Please update your config.yml.'
+  rescue Twitter::Error::ServerError => error
+    puts "#{error.class}: Retrying in 10 seconds..."
+    sleep 10
+    retry
   end
 end
