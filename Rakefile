@@ -38,17 +38,16 @@ task :search do
         print "Updating '#{update_string}' in reply to #{reply_to}..."
         client.update(update_string, in_reply_to_status_id: reply_to)
         puts 'done.'
-      rescue Twitter::Error::DuplicateStatus
-        puts 'Twitter::Error::DuplicateStatus'
+      rescue Twitter::Error::DuplicateStatus => error
+        puts error.class
       rescue Twitter::Error::TooManyRequests => error
-        puts 'Twitter::Error::TooManyRequests: Sleep' \
-             " #{error.rate_limit_reset_in} seconds..."
+        puts "#{error.class}: Sleep #{error.rate_limit_reset_in} seconds..."
         sleep error.rate_limit.reset_in + 1
         retry
       end
     end
-  rescue Twitter::Error::Unauthorized
-    puts 'Unauthorized OAuth access token and secret.' \
+  rescue Twitter::Error::Unauthorized => error
+    puts "#{error.class}: Unauthorized OAuth access token and secret." \
          ' Please update your config.yml.'
   end
 end
