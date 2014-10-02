@@ -4,8 +4,8 @@ require 'bundler/setup'
 require 'yaml'
 require 'twitter'
 
-desc 'Start Dwaet'
-task :start do
+desc 'Search doet in Twitter'
+task :search do
   config_file = YAML.load(IO.read('config.yml'))
   stream = Twitter::Streaming::Client.new do |config|
     config.consumer_key = config_file['consumer_key']
@@ -47,5 +47,3 @@ task :start do
          ' Please update your config.yml.'
   end
 end
-
-task default: :start
