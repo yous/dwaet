@@ -4,21 +4,26 @@ require 'bundler/setup'
 require 'yaml'
 require 'twitter'
 
+def read_config(config)
+  config_file = YAML.load(IO.read('config.yml'))
+  config.consumer_key = config_file['consumer_key']
+  config.consumer_secret = config_file['consumer_secret']
+  config.access_token = config_file['access_token']
+  config.access_token_secret = config_file['access_token_secret']
+end
+
+def streaming_client
+  Twitter::Streaming::Client.new(&method(:read_config))
+end
+
+def rest_client
+  Twitter::REST::Client.new(&method(:read_config))
+end
+
 desc 'Search doet in Twitter'
 task :search do
-  config_file = YAML.load(IO.read('config.yml'))
-  stream = Twitter::Streaming::Client.new do |config|
-    config.consumer_key = config_file['consumer_key']
-    config.consumer_secret = config_file['consumer_secret']
-    config.access_token = config_file['access_token']
-    config.access_token_secret = config_file['access_token_secret']
-  end
-  client = Twitter::REST::Client.new do |config|
-    config.consumer_key = config_file['consumer_key']
-    config.consumer_secret = config_file['consumer_secret']
-    config.access_token = config_file['access_token']
-    config.access_token_secret = config_file['access_token_secret']
-  end
+  stream = streaming_client
+  client = rest_client
   begin
     stream.filter(track: '됬 -rt') do |object|
       next unless object.is_a?(Twitter::Tweet)
