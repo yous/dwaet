@@ -31,7 +31,8 @@ access_token_secret: 'YOUR_ACCESS_SECRET'
 ## Usage
 
 ``` sh
-rake search # Search doet in Twitter
+rake search    # Search doet in Twitter
+rake timeline  # Search doet in timeline
 ```
 
 ## License

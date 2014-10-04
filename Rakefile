@@ -67,3 +67,16 @@ task :search do
     end
   )
 end
+
+desc 'Search doet in timeline'
+task :timeline do
+  stream = streaming_client
+  client = rest_client
+  main_loop(
+    stream,
+    client,
+    lambda do |streaming, rest|
+      streaming.home_timeline(&mention_dwaet(rest))
+    end
+  )
+end
