@@ -44,7 +44,9 @@ def mention_dwaet(rest)
   end
 end
 
-def main_loop(streaming, rest, &block)
+def main_loop(&block)
+  streaming = streaming_client
+  rest = rest_client
   block.call(streaming, rest)
 rescue Twitter::Error::Unauthorized => error
   warn "#{error.class}: Unauthorized OAuth access token and secret." \
@@ -57,39 +59,19 @@ end
 
 desc 'Search doet in Twitter'
 task :search do
-  stream = streaming_client
-  client = rest_client
-  main_loop(
-    stream,
-    client,
-    lambda do |streaming, rest|
-      streaming.filter(track: '됬 -rt', &mention_dwaet(rest))
-    end
-  )
+  main_loop(lambda do |streaming, rest|
+    streaming.filter(track: '됬 -rt', &mention_dwaet(rest))
+  end)
 end
 
 desc 'Search doet in timeline'
 task :timeline do
-  stream = streaming_client
-  client = rest_client
   main_loop(
-    stream,
-    client,
-    lambda do |streaming, rest|
-      streaming.home_timeline(&mention_dwaet(rest))
-    end
-  )
+    ->(streaming, rest) { streaming.home_timeline(&mention_dwaet(rest)) })
 end
 
 desc 'Search doet in mentions'
 task :mentions do
-  stream = streaming_client
-  client = rest_client
   main_loop(
-    stream,
-    client,
-    lambda do |streaming, rest|
-      streaming.mentions_timeline(&mention_dwaet(rest))
-    end
-  )
+    ->(streaming, rest) { streaming.mentions_timeline(&mention_dwaet(rest)) })
 end
