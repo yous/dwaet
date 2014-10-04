@@ -75,7 +75,16 @@ end
 
 desc 'Search doet in mentions'
 task :mentions do
-  main_loop do |streaming, rest|
-    streaming.mentions_timeline(&mention_dwaet(rest))
+  main_loop do |_streaming, rest|
+    since_id = nil
+    loop do
+      options = { count: Twitter::REST::Timelines::DEFAULT_TWEETS_PER_REQUEST }
+      options[:since_id] = since_id if since_id
+      mentions = rest.mentions_timeline(options).reverse
+      mentions.each(&mention_dwaet(rest))
+
+      since_id = mentions.last.id
+      sleep 60
+    end
   end
 end
