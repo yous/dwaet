@@ -20,9 +20,9 @@ def rest_client
   Twitter::REST::Client.new(&method(:read_config))
 end
 
-def mention_dwaet(rest)
+def mention_dwaet(rest, filter = nil)
   lambda do |object|
-    next unless object.is_a?(Twitter::Tweet)
+    next if filter && filter.call(object)
     retry_count = 3
     begin
       retry_count -= 1
@@ -60,14 +60,16 @@ end
 desc 'Search doet in Twitter'
 task :search do
   main_loop do |streaming, rest|
-    streaming.filter(track: '됬 -rt', &mention_dwaet(rest))
+    filter = ->(x) { x.is_a?(Twitter::Tweet) && !x.retweet? }
+    streaming.filter(track: '됬', &mention_dwaet(rest, filter))
   end
 end
 
 desc 'Search doet in timeline'
 task :timeline do
   main_loop do |streaming, rest|
-    streaming.home_timeline(&mention_dwaet(rest))
+    filter = ->(x) { x.is_a?(Twitter::Tweet) && !x.retweet? }
+    streaming.home_timeline(&mention_dwaet(rest, filter))
   end
 end
 
