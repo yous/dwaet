@@ -59,19 +59,21 @@ end
 
 desc 'Search doet in Twitter'
 task :search do
-  main_loop(lambda do |streaming, rest|
+  main_loop do |streaming, rest|
     streaming.filter(track: '됬 -rt', &mention_dwaet(rest))
-  end)
+  end
 end
 
 desc 'Search doet in timeline'
 task :timeline do
-  main_loop(
-    ->(streaming, rest) { streaming.home_timeline(&mention_dwaet(rest)) })
+  main_loop do |streaming, rest|
+    streaming.home_timeline(&mention_dwaet(rest))
+  end
 end
 
 desc 'Search doet in mentions'
 task :mentions do
-  main_loop(
-    ->(streaming, rest) { streaming.mentions_timeline(&mention_dwaet(rest)) })
+  main_loop do |streaming, rest|
+    streaming.mentions_timeline(&mention_dwaet(rest))
+  end
 end
