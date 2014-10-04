@@ -68,7 +68,10 @@ end
 desc 'Search doet in timeline'
 task :timeline do
   main_loop do |streaming, rest|
-    filter = ->(x) { x.is_a?(Twitter::Tweet) && !x.retweet? }
+    filter = lambda do |object|
+      object.is_a?(Twitter::Tweet) && !object.retweet? &&
+        object.text.include?('됬')
+    end
     streaming.user(&mention_dwaet(rest, filter))
   end
 end
@@ -76,12 +79,13 @@ end
 desc 'Search doet in mentions'
 task :mentions do
   main_loop do |_streaming, rest|
+    filter = ->(x) { x.text.include?('됬') }
     since_id = nil
     loop do
       options = { count: Twitter::REST::Timelines::DEFAULT_TWEETS_PER_REQUEST }
       options[:since_id] = since_id if since_id
       mentions = rest.mentions_timeline(options).reverse
-      mentions.each(&mention_dwaet(rest))
+      mentions.each(&mention_dwaet(rest, filter))
 
       since_id = mentions.last.id
       sleep 60
