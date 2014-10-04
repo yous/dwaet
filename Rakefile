@@ -80,3 +80,16 @@ task :timeline do
     end
   )
 end
+
+desc 'Search doet in mentions'
+task :mentions do
+  stream = streaming_client
+  client = rest_client
+  main_loop(
+    stream,
+    client,
+    lambda do |streaming, rest|
+      streaming.mentions_timeline(&mention_dwaet(rest))
+    end
+  )
+end

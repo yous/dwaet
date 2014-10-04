@@ -33,6 +33,7 @@ access_token_secret: 'YOUR_ACCESS_SECRET'
 ``` sh
 rake search    # Search doet in Twitter
 rake timeline  # Search doet in timeline
+rake mentions  # Search doet in mentions
 ```
 
 ## License
