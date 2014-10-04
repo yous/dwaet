@@ -88,6 +88,8 @@ task :mentions do
       mentions.each(&mention_dwaet(rest, filter))
 
       since_id = mentions.last.id
+      puts "since_id is set to #{since_id}."
+      puts 'Sleep 60 seconds...'
       sleep 60
     end
   end
