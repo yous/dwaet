@@ -87,7 +87,7 @@ task :mentions do
       mentions = rest.mentions_timeline(options).reverse
       mentions.each(&mention_dwaet(rest, filter))
 
-      since_id = mentions.last.id
+      since_id = mentions.last.id unless mentions.empty?
       puts "since_id is set to #{since_id}."
       puts 'Sleep 60 seconds...'
       sleep 60
