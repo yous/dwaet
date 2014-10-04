@@ -69,7 +69,7 @@ desc 'Search doet in timeline'
 task :timeline do
   main_loop do |streaming, rest|
     filter = ->(x) { x.is_a?(Twitter::Tweet) && !x.retweet? }
-    streaming.home_timeline(&mention_dwaet(rest, filter))
+    streaming.user(&mention_dwaet(rest, filter))
   end
 end
 
