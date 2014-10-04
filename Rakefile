@@ -60,7 +60,7 @@ end
 desc 'Search doet in Twitter'
 task :search do
   main_loop do |streaming, rest|
-    filter = ->(x) { x.is_a?(Twitter::Tweet) && !x.retweet? }
+    filter = ->(x) { !x.is_a?(Twitter::Tweet) || x.retweet? }
     streaming.filter(track: '됬', &mention_dwaet(rest, filter))
   end
 end
@@ -69,8 +69,8 @@ desc 'Search doet in timeline'
 task :timeline do
   main_loop do |streaming, rest|
     filter = lambda do |object|
-      object.is_a?(Twitter::Tweet) && !object.retweet? &&
-        object.text.include?('됬')
+      !object.is_a?(Twitter::Tweet) || object.retweet? ||
+        !object.text.include?('됬')
     end
     streaming.user(&mention_dwaet(rest, filter))
   end
@@ -79,7 +79,7 @@ end
 desc 'Search doet in mentions'
 task :mentions do
   main_loop do |_streaming, rest|
-    filter = ->(x) { x.text.include?('됬') }
+    filter = ->(x) { !x.text.include?('됬') }
     since_id = nil
     loop do
       options = { count: Twitter::REST::Timelines::DEFAULT_TWEETS_PER_REQUEST }
