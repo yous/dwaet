@@ -20,6 +20,15 @@ def rest_client
   Twitter::REST::Client.new(&method(:read_config))
 end
 
+def pure_tweet?(object)
+  object.is_a?(Twitter::Tweet) && !object.retweet?
+end
+
+def doet?(text)
+  return true if text.include?('됬')
+  text.include?('됫') && text =~ /됫(?!밑|바가[지치]|박|밥|배지|병|수|술|쉐)/
+end
+
 def mention_dwaet(rest, filter = nil)
   lambda do |object|
     next if filter && filter.call(object)
@@ -60,18 +69,15 @@ end
 desc 'Search doet in Twitter'
 task :search do
   main_loop do |streaming, rest|
-    filter = ->(x) { !x.is_a?(Twitter::Tweet) || x.retweet? }
-    streaming.filter(track: '됬', &mention_dwaet(rest, filter))
+    filter = ->(object) { pure_tweet?(object) && doet?(object.text) }
+    streaming.filter(track: %(됬 됫).join(','), &mention_dwaet(rest, filter))
   end
 end
 
 desc 'Search doet in timeline'
 task :timeline do
   main_loop do |streaming, rest|
-    filter = lambda do |object|
-      !object.is_a?(Twitter::Tweet) || object.retweet? ||
-        !object.text.include?('됬')
-    end
+    filter = ->(object) { pure_tweet?(object) && doet?(object.text) }
     streaming.user(&mention_dwaet(rest, filter))
   end
 end
@@ -79,7 +85,7 @@ end
 desc 'Search doet in mentions'
 task :mentions do
   main_loop do |_streaming, rest|
-    filter = ->(x) { !x.text.include?('됬') }
+    filter = ->(object) { doet?(object.text) }
     since_id = nil
     loop do
       options = { count: Twitter::REST::Timelines::DEFAULT_TWEETS_PER_REQUEST }
