@@ -4,6 +4,13 @@ No **doet**, it's **dwaet**.
 
 **됬**이 아니라 **됐**입니다.
 
+## Feature
+
+1. Search tweets containing doet:
+    - '됬'
+    - '됫' except [words containing '됫'](http://krdic.naver.com/search.nhn?kind=keyword&query=%2A%EB%90%AB%2A)
+2. Mention '됐' to them.
+
 ## Installation
 
 Clone this repository:
